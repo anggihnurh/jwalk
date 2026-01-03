@@ -1,4 +1,4 @@
-# Japanese Walking App 🇯🇵🚶
+# Jwalk - Japanese Walking App 🇯🇵🚶
 
 A Progressive Web App (PWA) designed to guide users through the **Japanese Walking Method** (Interval Walking Training - IWT), a scientific approach to boost metabolism, cardiovascular health, and leg strength.
 
