@@ -1,0 +1,538 @@
+:root {
+    /* Brand Colors (Constant) */
+    --primary: #4ecca3;
+    --secondary: #3d84a8;
+    --accent: #ff6b6b;
+    --color-slow: #4ecca3;
+    --color-fast: #ff4757;
+
+    /* Theme Variables (Dark Default) */
+    --bg-main: #1a1a2e;
+    --bg-surface: #16213e;
+    --text-main: #ffffff;
+    --text-muted: #a0a0a0;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    --nav-bg: rgba(26, 26, 46, 0.95);
+
+    --nav-height: 70px;
+    --font-main: 'Outfit', sans-serif;
+
+    /* Backgrounds (Dark Mode) */
+    --bg-gradient: linear-gradient(to bottom, #1a1a2e 0%, #000000 100%);
+
+    /* Exercise Gradients (Dark - Subtle) */
+    --exercise-bg-slow: radial-gradient(circle at center, #233430 0%, #1a1a2e 100%);
+    --exercise-bg-fast: radial-gradient(circle at center, #3a2020 0%, #1a1a2e 100%);
+}
+
+/* Light Mode Overrides */
+body.light-mode {
+    --bg-main: #f0f2f5;
+    --bg-surface: #ffffff;
+    --text-main: #2d3436;
+    --text-muted: #636e72;
+    --border-color: rgba(0, 0, 0, 0.05);
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --nav-bg: rgba(255, 255, 255, 0.95);
+
+    /* Backgrounds (Light Mode) */
+    --bg-gradient: linear-gradient(to bottom, #ffffff 0%, #f0f2f5 100%);
+
+    /* Exercise Gradients (Light - Subtle) */
+    --exercise-bg-slow: radial-gradient(circle at center, #e0f2f1 0%, #f0f2f5 100%);
+    --exercise-bg-fast: radial-gradient(circle at center, #ffebee 0%, #f0f2f5 100%);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: var(--font-main);
+    background: var(--bg-gradient);
+    background-color: var(--bg-main);
+    /* Fallback */
+    background-attachment: fixed;
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+    transition: background 0.3s, color 0.3s;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: var(--nav-height);
+    background: var(--nav-bg);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    z-index: 100;
+}
+
+/* Theme Toggle Button */
+.theme-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.theme-btn:active {
+    transform: scale(0.9);
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-btn.active {
+    color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.nav-btn .icon {
+    font-size: 1.5rem;
+}
+
+.nav-btn .label {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Views */
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    padding-bottom: calc(var(--nav-height) + 20px);
+}
+
+.view {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.view.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Education / Text Content */
+.hero {
+    margin-bottom: 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.brand-logo {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(78, 204, 163, 0.3);
+}
+
+.hero h1 {
+    font-size: 2.2rem;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+}
+
+.card-container {
+    display: grid;
+    gap: 20px;
+}
+
+.card {
+    background: var(--bg-surface);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+    transition: background 0.3s, border 0.3s;
+}
+
+.card h2 {
+    color: var(--primary);
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.instruction-list {
+    list-style: none;
+}
+
+.instruction-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Exercise View */
+#exercise {
+    display: flex;
+    /* Flex override for exercise view to center content */
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#exercise.hidden {
+    display: none;
+}
+
+#exercise.active {
+    display: flex;
+}
+
+
+.timer-display {
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.mode-indicator {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    color: var(--text-muted);
+    transition: color 0.5s ease;
+}
+
+.time-big {
+    font-size: 5rem;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(78, 204, 163, 0.2);
+    /* In light mode we might want to reduce this glow or change it */
+    color: var(--text-main);
+}
+
+.interval-info {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-top: 10px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 40px;
+}
+
+.stat-box {
+    background: var(--bg-surface);
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--border-color);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.controls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(78, 204, 163, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:active {
+    transform: scale(0.95);
+}
+
+.btn-icon {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main);
+}
+
+/* History List */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    background: var(--bg-surface);
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--primary);
+    border: 1px solid var(--border-color);
+    border-left-width: 4px;
+    /* Maintain left border width */
+}
+
+.history-date {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.history-details {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* State Classes for Exercise */
+.exercise-mode-slow {
+    color: var(--color-slow);
+}
+
+.exercise-mode-fast {
+    color: var(--color-fast);
+}
+
+/* Background transitions */
+body.bg-slow {
+    background: var(--exercise-bg-slow);
+}
+
+body.bg-fast {
+    background: var(--exercise-bg-fast);
+}
+
+/* Education Visuals */
+.instruction-intro {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.step-visual {
+    background: var(--bg-surface);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.step-visual h3 {
+    font-size: 1rem;
+    color: var(--secondary);
+    margin-bottom: 10px;
+}
+
+.visual-img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 2px solid var(--border-color);
+}
+
+/* Reference List */
+.ref-list {
+    list-style: none;
+}
+
+.ref-list li {
+    margin-bottom: 15px;
+}
+
+.ref-list a {
+    display: block;
+    background: var(--bg-surface);
+    padding: 12px;
+    border-radius: 8px;
+    color: var(--text-main);
+    text-decoration: none;
+    transition: background 0.2s;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+}
+
+.ref-list a:hover {
+    background: rgba(78, 204, 163, 0.1);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.external-icon {
+    float: right;
+    color: var(--text-muted);
+}
+
+/* Video Layout */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.video-item h3 {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    /* User provided landscape embed, switching to 16/9. If vertical video in landscape player, player handles black bars */
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 0 auto;
+    max-height: 500px;
+    /* Cap height to prevent massive black boxes on desktop */
+}
+
+/* Fallback for older browsers if needed, but aspect-ratio is well supported now. 
+   If aspect-ratio fails, we can rely on max-height. 
+   Let's ensure the iframe fills it.
+*/
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+    transition: background 0.3s;
+}
+
+.play-overlay:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.play-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+}
+
+.benefit-list {
+    list-style: none;
+    padding: 0;
+}
+
+.benefit-list li {
+    background: var(--bg-surface);
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    border-left: 3px solid var(--primary);
+    border: 1px solid var(--border-color);
+    border-left-width: 3px;
+}

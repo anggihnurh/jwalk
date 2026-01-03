@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Japanese Walking Method</title>
+    <meta name="description" content="Master the art of healthy walking with interval training.">
+
+    <!-- PWA Manifest & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme">
+            🌞
+        </button>
+        <!-- Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-target="education">
+                <span class="icon">📖</span>
+                <span class="label">Learn</span>
+            </button>
+            <button class="nav-btn" data-target="exercise">
+                <span class="icon">🏃</span>
+                <span class="label">Exercise</span>
+            </button>
+            <button class="nav-btn" data-target="history">
+                <span class="icon">📅</span>
+                <span class="label">History</span>
+            </button>
+        </nav>
+
+        <!-- Views -->
+        <main class="content">
+            <!-- Education View -->
+            <section id="education" class="view active">
+                <header class="hero">
+                    <img src="img/icon-192.png" alt="JWalk Logo" class="brand-logo">
+                    <h1>JWalk</h1>
+                    <p class="subtitle">Japanese Walk Exercise</p>
+                </header>
+
+                <div class="card-container">
+                    <!-- Intro -->
+                    <div class="card">
+                        <h2>🏃 What is it?</h2>
+                        <p>The Japanese walking method, also known as <strong>Interval Walking Training (IWT)</strong>,
+                            involves alternating three minutes of brisk walking (at about 70% of maximum effort, where
+                            talking becomes difficult) with three minutes of slow walking (around 40% effort), repeated
+                            for at least 30 minutes, four times a week.</p>
+                        <br>
+                        <p>Developed by Japanese researchers like <strong>Professor Hiroshi Nose</strong> at Shinshu
+                            University, it offers greater benefits than steady walking, such as improved aerobic
+                            capacity, weight loss, lower blood pressure, and stronger thigh muscles.</p>
+                    </div>
+
+                    <!-- Video -->
+                    <div class="card">
+                        <h2>📺 Watch the Explanation</h2>
+                        <div class="video-container">
+                            <div class="video-container">
+                                <iframe width="560" height="315"
+                                    src="https://www.youtube.com/embed/K7Ehvq-bm6I?si=lN9slMTK2BvtNkOY"
+                                    title="YouTube video player" frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
+                        <!-- Benefits -->
+                        <div class="card">
+                            <h2>✨ Key Benefits</h2>
+                            <ul class="benefit-list">
+                                <li><strong>Weight Loss & Blood Pressure:</strong> Studies show participants using this
+                                    method lost more weight and reduced blood pressure more than those doing continuous
+                                    moderate walking toward 8,000 steps daily.</li>
+                                <li><strong>Cardiovascular Health:</strong> Boosts cardiovascular health, fat
+                                    metabolism,
+                                    leg strength by up to 17%, and overall fitness by 20% with consistent practice.</li>
+                                <li><strong>Low Impact:</strong> Accessible and easy on joints while improving posture,
+                                    reducing stress, and supporting immunity through mindful core engagement.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Practice -->
+                        <div class="card">
+                            <h2>👟 How to Practice</h2>
+
+                            <div class="step-visual">
+                                <h3>The Routine</h3>
+                                <p><strong>3 Mins Fast</strong> (Long strides, arm swings)</p>
+                                <p>⬇️</p>
+                                <p><strong>3 Mins Slow</strong> (Relaxed pace)</p>
+                                <p>🔄 Repeat 5 times (30 mins total)</p>
+                            </div>
+                            <p>Sessions can be split into shorter bouts (e.g., 10 mins x 3 times daily).</p>
+                        </div>
+
+                        <!-- References -->
+                        <div class="card">
+                            <h2>📚 References</h2>
+                            <ul class="ref-list">
+                                <li>
+                                    <a href="https://pubmed.ncbi.nlm.nih.gov/17605959/" target="_blank">
+                                        Effects of High-Intensity Interval Walking (PubMed)
+                                        <span class="external-icon">↗</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://theconversation.com/japanese-walking-the-benefits-of-this-fitness-trend-257302"
+                                        target="_blank">
+                                        Japanese Walking: Benefits of this Trend
+                                        <span class="external-icon">↗</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://www.nytimes.com/2025/07/31/well/move/japanese-walking-fitness-trend.html"
+                                        target="_blank">
+                                        NYT: Fitness Trend Worth Trying
+                                        <span class="external-icon">↗</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+            </section>
+
+            <!-- Exercise View -->
+            <section id="exercise" class="view hidden">
+                <div class="timer-display">
+                    <div class="mode-indicator" id="mode-label">Ready</div>
+                    <div class="time-big" id="timer">30:00</div>
+                    <div class="interval-info" id="interval-status">Session Start</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-label">Steps</span>
+                        <span class="stat-value" id="step-count">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Phase</span>
+                        <span class="stat-value" id="phase-counter">1/1</span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="btn-start" class="btn-primary">Start Session</button>
+                    <button id="btn-sound-toggle" class="btn-icon" aria-label="Toggle Sound">
+                        🔊
+                    </button>
+                </div>
+            </section>
+
+            <!-- History View -->
+            <section id="history" class="view hidden">
+                <header>
+                    <h2>Activity Log</h2>
+                </header>
+                <div id="history-list" class="history-list">
+                    <!-- History items will be injected here -->
+                    <div class="empty-state">No sessions yet. Start walking!</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Logic -->
+    <script src="app.js"></script>
+</body>
+
+</html>
