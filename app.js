@@ -293,6 +293,156 @@ class StepCounter {
     }
 }
 
+class ShareManager {
+    constructor() {
+        this.canvas = null;
+        this.ctx = null;
+    }
+
+    async generateShareImage(session) {
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1080;
+        const ctx = canvas.getContext('2d');
+
+        // Calculate stats
+        const date = new Date(session.date);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const avgStepsPerMin = session.duration > 0 ? Math.round(session.steps / session.duration) : 0;
+        const estimatedDistance = ((session.steps * 0.762) / 1000).toFixed(2);
+        const estimatedCalories = Math.round(session.duration * 3.5);
+
+        // Background gradient
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, '#1a1a2e');
+        gradient.addColorStop(1, '#0f3460');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Accent gradient overlay
+        const accentGradient = ctx.createRadialGradient(540, 300, 100, 540, 300, 600);
+        accentGradient.addColorStop(0, 'rgba(78, 204, 163, 0.2)');
+        accentGradient.addColorStop(1, 'rgba(78, 204, 163, 0)');
+        ctx.fillStyle = accentGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // App branding
+        ctx.fillStyle = '#4ecca3';
+        ctx.font = 'bold 72px Outfit, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🚶 JWalk', 540, 150);
+
+        ctx.fillStyle = '#a0a0a0';
+        ctx.font = '32px Outfit, sans-serif';
+        ctx.fillText('Japanese Walking Method', 540, 200);
+
+        // Date and time
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '36px Outfit, sans-serif';
+        ctx.fillText(`${dateStr} • ${timeStr}`, 540, 280);
+
+        // Status badge
+        const statusText = session.completed ? '✅ COMPLETED' : '⏹️ STOPPED EARLY';
+        const statusColor = session.completed ? '#4ecca3' : '#ff6b6b';
+
+        ctx.fillStyle = statusColor + '33';
+        ctx.fillRect(340, 320, 400, 60);
+        ctx.fillStyle = statusColor;
+        ctx.font = 'bold 32px Outfit, sans-serif';
+        ctx.fillText(statusText, 540, 360);
+
+        // Stats grid
+        const stats = [
+            { icon: '⏱️', label: 'DURATION', value: `${session.duration} min` },
+            { icon: '👟', label: 'STEPS', value: session.steps.toLocaleString() },
+            { icon: '📏', label: 'DISTANCE', value: `${estimatedDistance} km` },
+            { icon: '🔥', label: 'CALORIES', value: `${estimatedCalories} kcal` }
+        ];
+
+        const startY = 480;
+        const boxWidth = 480;
+        const boxHeight = 200;
+        const gap = 60;
+
+        stats.forEach((stat, index) => {
+            const row = Math.floor(index / 2);
+            const col = index % 2;
+            const x = 60 + col * (boxWidth + gap);
+            const y = startY + row * (boxHeight + gap);
+
+            // Box background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.fillRect(x, y, boxWidth, boxHeight);
+
+            // Border
+            ctx.strokeStyle = 'rgba(78, 204, 163, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, boxWidth, boxHeight);
+
+            // Icon
+            ctx.font = '48px sans-serif';
+            ctx.fillText(stat.icon, x + boxWidth / 2, y + 70);
+
+            // Label
+            ctx.fillStyle = '#a0a0a0';
+            ctx.font = '24px Outfit, sans-serif';
+            ctx.fillText(stat.label, x + boxWidth / 2, y + 110);
+
+            // Value
+            ctx.fillStyle = '#4ecca3';
+            ctx.font = 'bold 42px Outfit, sans-serif';
+            ctx.fillText(stat.value, x + boxWidth / 2, y + 160);
+        });
+
+        // Footer
+        ctx.fillStyle = '#a0a0a0';
+        ctx.font = '28px Outfit, sans-serif';
+        ctx.fillText('Interval Walking Training', 540, 1000);
+
+        return canvas;
+    }
+
+    async shareImage(session) {
+        try {
+            const canvas = await this.generateShareImage(session);
+
+            // Convert canvas to blob
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+
+            // Try Web Share API (mobile)
+            if (navigator.share && navigator.canShare) {
+                const file = new File([blob], `jwalk-${Date.now()}.png`, { type: 'image/png' });
+                const shareData = {
+                    files: [file],
+                    title: 'JWalk Activity',
+                    text: `I completed a ${session.duration} min walking session with ${session.steps} steps! 🚶`
+                };
+
+                if (navigator.canShare(shareData)) {
+                    await navigator.share(shareData);
+                    return;
+                }
+            }
+
+            // Fallback: Download image
+            this.downloadImage(canvas, `jwalk-activity-${Date.now()}.png`);
+
+        } catch (error) {
+            console.error('Share failed:', error);
+            alert('Could not share image. Please try again.');
+        }
+    }
+
+    downloadImage(canvas, filename) {
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+}
+
 class HistoryManager {
     constructor() {
         this.storageKey = 'jwalk_history';
@@ -309,7 +459,47 @@ class HistoryManager {
         localStorage.setItem(this.storageKey, JSON.stringify(history));
     }
 
-    render(containerId) {
+    // Create dummy sessions for testing
+    createDummyData() {
+        const now = new Date();
+        const dummySessions = [
+            {
+                date: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
+                duration: 30,
+                steps: 3450,
+                completed: true
+            },
+            {
+                date: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+                duration: 30,
+                steps: 3280,
+                completed: true
+            },
+            {
+                date: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+                duration: 18,
+                steps: 1950,
+                completed: false
+            },
+            {
+                date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+                duration: 30,
+                steps: 3620,
+                completed: true
+            },
+            {
+                date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+                duration: 25,
+                steps: 2840,
+                completed: false
+            }
+        ];
+
+        localStorage.setItem(this.storageKey, JSON.stringify(dummySessions));
+        console.log('✅ Dummy session data created!');
+    }
+
+    render(containerId, shareManager) {
         const container = document.getElementById(containerId);
         const history = this.getHistory();
 
@@ -320,19 +510,91 @@ class HistoryManager {
             return;
         }
 
-        history.forEach(session => {
+        history.forEach((session, index) => {
             const date = new Date(session.date).toLocaleDateString();
             const time = new Date(session.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Calculate additional statistics
+            const avgStepsPerMin = session.duration > 0 ? Math.round(session.steps / session.duration) : 0;
+            const estimatedDistance = (session.steps * 0.762) / 1000; // Average step = 0.762m, convert to km
+            const estimatedCalories = Math.round(session.duration * 3.5); // Rough estimate: 3.5 cal/min for brisk walking
+            const phases = Math.ceil(session.duration / 3); // Each phase is 3 minutes
 
             const div = document.createElement('div');
             div.className = 'history-item';
             div.innerHTML = `
-                <div>
-                    <div class="history-date">${date} ${time}</div>
-                    <div class="history-details">${session.duration} mins • ${session.steps} steps</div>
+                <div class="history-main" data-index="${index}">
+                    <div class="history-header">
+                        <div>
+                            <div class="history-date">${date} ${time}</div>
+                            <div class="history-details">${session.duration} mins • ${session.steps} steps</div>
+                        </div>
+                        <div class="history-actions">
+                            <button class="share-btn" aria-label="Share activity" title="Share activity">📤</button>
+                            <div class="history-mode">${session.completed ? '✅' : '⏹️'}</div>
+                            <button class="expand-btn" aria-label="Expand details">▼</button>
+                        </div>
+                    </div>
+                    <div class="history-detail-panel" style="display: none;">
+                        <div class="detail-stats-grid">
+                            <div class="detail-stat">
+                                <span class="detail-icon">👟</span>
+                                <span class="detail-label">Avg Steps/Min</span>
+                                <span class="detail-value">${avgStepsPerMin}</span>
+                            </div>
+                            <div class="detail-stat">
+                                <span class="detail-icon">📏</span>
+                                <span class="detail-label">Est. Distance</span>
+                                <span class="detail-value">${estimatedDistance.toFixed(2)} km</span>
+                            </div>
+                            <div class="detail-stat">
+                                <span class="detail-icon">🔥</span>
+                                <span class="detail-label">Est. Calories</span>
+                                <span class="detail-value">${estimatedCalories} kcal</span>
+                            </div>
+                            <div class="detail-stat">
+                                <span class="detail-icon">⏱️</span>
+                                <span class="detail-label">Phases</span>
+                                <span class="detail-value">${phases}</span>
+                            </div>
+                        </div>
+                        <div class="detail-info">
+                            <div class="detail-row">
+                                <span class="detail-row-label">Status:</span>
+                                <span class="detail-row-value">${session.completed ? 'Completed Full Session' : 'Stopped Early'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-row-label">Session Type:</span>
+                                <span class="detail-row-value">Interval Walking Training</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="history-mode">${session.completed ? '✅' : '⏹️'}</div>
             `;
+
+            // Add click event to toggle details
+            const historyMain = div.querySelector('.history-main');
+            const expandBtn = div.querySelector('.expand-btn');
+            const detailPanel = div.querySelector('.history-detail-panel');
+            const shareBtn = div.querySelector('.share-btn');
+
+            historyMain.addEventListener('click', (e) => {
+                // Don't expand if clicking share button
+                if (e.target.closest('.share-btn')) return;
+
+                const isExpanded = detailPanel.style.display === 'block';
+                detailPanel.style.display = isExpanded ? 'none' : 'block';
+                expandBtn.textContent = isExpanded ? '▼' : '▲';
+            });
+
+            // Share button handler
+            if (shareManager) {
+                shareBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    shareManager.shareImage(session);
+                });
+            }
+
             container.appendChild(div);
         });
     }
@@ -344,6 +606,7 @@ class App {
         this.audio = new AudioManager();
         this.pedometer = new StepCounter();
         this.history = new HistoryManager();
+        this.shareManager = new ShareManager();
 
         this.ui = {
             updateMode: (mode) => {
@@ -385,7 +648,7 @@ class App {
         this.router = new Router(this);
 
         // Initial render of history
-        this.history.render('history-list');
+        this.history.render('history-list', this.shareManager);
 
         // Theme initialization
         this.initTheme();
@@ -447,7 +710,7 @@ class App {
                 this.router.navigate(target);
 
                 if (target === 'history') {
-                    this.history.render('history-list');
+                    this.history.render('history-list', this.shareManager);
                 }
 
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -498,4 +761,9 @@ class Router {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();
+
+    // Helper for testing - log to console
+    console.log('%c🚶 JWalk App Loaded!', 'color: #4ecca3; font-size: 16px; font-weight: bold;');
+    console.log('%cTo create dummy session data for testing, run:', 'color: #3d84a8; font-size: 12px;');
+    console.log('%cwindow.app.history.createDummyData()', 'background: #1a1a2e; color: #4ecca3; padding: 5px; border-radius: 3px; font-family: monospace;');
 });
