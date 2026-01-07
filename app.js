@@ -459,45 +459,6 @@ class HistoryManager {
         localStorage.setItem(this.storageKey, JSON.stringify(history));
     }
 
-    // Create dummy sessions for testing
-    createDummyData() {
-        const now = new Date();
-        const dummySessions = [
-            {
-                date: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
-                duration: 30,
-                steps: 3450,
-                completed: true
-            },
-            {
-                date: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-                duration: 30,
-                steps: 3280,
-                completed: true
-            },
-            {
-                date: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-                duration: 18,
-                steps: 1950,
-                completed: false
-            },
-            {
-                date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-                duration: 30,
-                steps: 3620,
-                completed: true
-            },
-            {
-                date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
-                duration: 25,
-                steps: 2840,
-                completed: false
-            }
-        ];
-
-        localStorage.setItem(this.storageKey, JSON.stringify(dummySessions));
-        console.log('✅ Dummy session data created!');
-    }
 
     render(containerId, shareManager) {
         const container = document.getElementById(containerId);
@@ -761,9 +722,4 @@ class Router {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();
-
-    // Helper for testing - log to console
-    console.log('%c🚶 JWalk App Loaded!', 'color: #4ecca3; font-size: 16px; font-weight: bold;');
-    console.log('%cTo create dummy session data for testing, run:', 'color: #3d84a8; font-size: 12px;');
-    console.log('%cwindow.app.history.createDummyData()', 'background: #1a1a2e; color: #4ecca3; padding: 5px; border-radius: 3px; font-family: monospace;');
 });
